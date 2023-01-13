@@ -74,8 +74,12 @@ public class StudentRepository {
     }
 
     public void deleteAllTeacherStudent(){
-        studentMap = new HashMap<>();
-        teacherMap = new HashMap<>();
+        for (List<String> str : teacherMap.values()) {
+            for (String str1 : str) {
+                studentMap.remove(str1);
+            }
+        }
+        teacherMap.clear();
     }
 
 }
