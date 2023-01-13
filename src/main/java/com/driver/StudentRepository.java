@@ -6,28 +6,26 @@ import java.util.*;
 public class StudentRepository {
 
     HashMap<String,Student> studentMap = new HashMap<>();
-    HashMap<String,Teacher> teacherMap = new HashMap<>();
-    HashMap<String,List<String>> teacherStudentMap = new HashMap<>();
+    HashMap<Teacher,List<String>> teacherMap = new HashMap<>();
 
     public void addStudent(Student student){
         studentMap.put(student.getName(),student);
     }
 
     public void addTeacher(Teacher teacher){
-        teacherMap.put(teacher.getName(),teacher);
+        List<String> studentList = new ArrayList();
+        teacherMap.put(teacher,studentList);
     }
 
     public void addTeacherStudent(String studentName,String teacherName){
-
-        if(studentMap.containsKey(studentName) && teacherMap.containsKey(teacherName)){
-            List<String> listStudentByTeacher = new ArrayList<>();
-
-            if(teacherStudentMap.containsKey(teacherName))
-                listStudentByTeacher= teacherStudentMap.get(teacherName);
-
-            listStudentByTeacher.add(studentName);
-
-            teacherStudentMap.put(teacherName,listStudentByTeacher);
+        for (Teacher teacher1:teacherMap.keySet()) {
+            if (Objects.equals(teacherName, teacher1.getName())) {
+                List<String> list;
+                list = teacherMap.get(teacher1);
+                list.add(studentName);
+                teacherMap.put(teacher1, list);
+                return;
+            }
         }
     }
 
@@ -36,15 +34,19 @@ public class StudentRepository {
     }
 
     public Teacher getTeacher(String name){
-        return teacherMap.get(name);
+        for(Teacher teacher:teacherMap.keySet()){
+            if(Objects.equals(name, teacher.getName()))
+                return teacher;
+        }
+        return null;
     }
 
     public List<String> getListOfStudentByTeacher(String name){
-        List<String> studentList = new ArrayList<>();
-
-        studentList = teacherStudentMap.get(name);
-
-        return studentList;
+        for(Teacher teacher:teacherMap.keySet()){
+            if(Objects.equals(name, teacher.getName()))
+                return teacherMap.get(teacher);
+        }
+        return null;
     }
 
     public List<String> getAllStudents(){
@@ -53,28 +55,27 @@ public class StudentRepository {
         for(String name : studentMap.keySet()){
             studentList.add(name);
         }
-
         return studentList;
     }
 
     public void deleteTeacherAndItsStudent(String teacherName){
-        teacherMap.remove(teacherName);
-
         List<String> studentList = new ArrayList<>();
-
-        studentList = teacherStudentMap.get(teacherName);
+        for(Teacher teacher: teacherMap.keySet()){
+            if(Objects.equals(teacherName, teacher.getName())){
+                studentList = teacherMap.get(teacher);
+                teacherMap.remove(teacher);
+                break;
+            }
+        }
         for(String name : studentList){
             if(studentMap.containsKey(name))
                 studentMap.remove(name);
         }
-
-        teacherStudentMap.remove(teacherName);
     }
 
     public void deleteAllTeacherStudent(){
         studentMap = new HashMap<>();
         teacherMap = new HashMap<>();
-        teacherStudentMap = new HashMap<>();
     }
 
 }
